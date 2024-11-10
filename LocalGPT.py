@@ -9,20 +9,20 @@ import pyautogui
 import webbrowser
 import os
 
-# โหลดโมเดล GPT4All
+#โหลดโมเดล GPT4
 try:
     model = GPT4All("C:\\Users\\ninen\\Documents\\dev\\Python\\LocalGPT\\gpt4all-falcon-newbpe-q4_0.gguf", allow_download=False)
     print("Model loaded successfully!")
 except Exception as e:
     print("Error loading model:", e)
 
-
-# ตั้งค่าเครื่องมือสำหรับการพูด
 assistant_name = "Roz"
 listening_for_trigger_word = True
 should_run = True
 source = sr.Microphone()
 recognizer = sr.Recognizer()
+
+#กำหนดโมเดลสำหรับพูด
 base_model_path = os.path.expanduser('~/.cache/whisper/base.pt')
 base_model = whisper.load_model(base_model_path)
 
@@ -41,10 +41,11 @@ def respond(text):
         system(f"say '{clean_text}'")
     else:
         voices = engine.getProperty('voices')
-        engine.setProperty('voice', voices[1].id)
+        engine.setProperty('voice', voices[1].id) #กำหนดเสียงพูด ชาย หญิง
         engine.say(text)
         engine.runAndWait()
 
+#ฟังก์ชั่นก์รอฟังคำสั่ง
 def listen_for_command():
     with source as s:
         print("Listening for commands...")
@@ -66,6 +67,7 @@ def listen_for_command():
         print("Unable to access the Google Speech Recognition API.")
         return None
 
+#หลังจากได้รับคำสั่งมาแล้วจะนำคำที่ได้ยินมาเปรียบเทียบกับคำสั่งที่มี
 def perform_command(command):
     global tasks
     global listeningToTask
@@ -113,10 +115,9 @@ def perform_command(command):
             respond("Thinking...")
             print("User command: ", command)
             try:
-                # ให้โมเดลตอบคำถามในรูปแบบที่เหมาะสม
-                question = "Question: " + command  # เพิ่มคำว่า "Question: " เพื่อตั้งใจให้โมเดลเข้าใจเป็นคำถาม
+                question = "Question: " + command
                 output = model.generate(question, max_tokens=200)
-                print("Model output: ", output)  # เพิ่มการพิมพ์ผลลัพธ์จากโมเดล
+                print("Model output: ", output)
                 if output:
                     respond(output)
                 else:
